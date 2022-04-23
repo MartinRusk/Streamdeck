@@ -1,76 +1,58 @@
 #include <Arduino.h>
 #include <Keyboard.h>
 #include <KeyboardLayout.h>
-#include <Button.h>
-
 
 #define DEBOUNCE 100
 #define DELAY 100
 
-// class Button
-// {
-// private:
-//   int btnPin;
-//   unsigned long debounceTime;
-//   int previousSteadyState;
-//   int lastSteadyState;
-//   int currentState;
-//   unsigned long nextDebounceTime;
-// public:
-//   Button(int pin);
-//   void setDebounceTime(unsigned long time);
-//   bool isPressed(void);
-//   void loop(void);
-// };
+class But
+{
+private:
+  uint8_t pin;
+  bool state;
+  bool lastState;
+  unsigned long timer;
+public:
+  But(uint8_t pin);
+  bool isPressed(void);
+};
 
-// Button::Button(int pin)
-// {
-//   btnPin = pin;
-//   debounceTime = 0;
-//   pinMode(btnPin, INPUT_PULLUP);
-//   previousSteadyState = digitalRead(btnPin);
-//   lastSteadyState = previousSteadyState;
-//   nextDebounceTime = 0;
-// }
+But::But(uint8_t p)
+{
+  pin = p;
+  pinMode(pin, INPUT_PULLUP);
+  state = false;
+  lastState = false;
+}
 
-// void Button::loop(void)
-// {
-//   currentState = digitalRead(btnPin);
-//   if (millis() >= nextDebounceTime) {
-//     if (currentState != previousSteadyState)
-//     {
-//       previousSteadyState = lastSteadyState;
-//       lastSteadyState = currentState;
-//       nextDebounceTime = millis() + debounceTime;
-//     }
-// 	}
-// }
+bool But::isPressed(void)
+{
+  lastState = state;
+  bool input = digitalRead(pin);
+  if (!input) {
+    state = true;
+    timer = millis() + DEBOUNCE;
+  }
+  else
+  {
+    if (millis() > timer)
+    state = false;
+  }
+  return (state && !lastState);
+}
 
-// void Button::setDebounceTime(unsigned long time)
-// {
-//   debounceTime = time;
-// }
-
-// bool Button::isPressed(void)
-// {
-//   if (previousSteadyState == HIGH && lastSteadyState == LOW)
-//     return true;
-//   else
-//     return false;
-// }
-
-Button button0(14);
-Button button1(0);
-Button button2(2);
-Button button3(3);
-Button button4(4);
-Button button5(5);
-Button button6(6);
-Button button7(7);
-Button button8(8);
-Button button9(9);
-Button buttonA(10);
-Button buttonB(16);
+But button0(14);
+But button1(0);
+But button2(2);
+But button3(3);
+But button4(4);
+But button5(5);
+But button6(6);
+But button7(7);
+But button8(8);
+But button9(9);
+But buttonA(10);
+But buttonB(16);
 
 enum t_mode
 {
@@ -139,18 +121,6 @@ void set_mode(t_mode m)
 void setup()
 {
   Keyboard.begin();
-  button0.setDebounceTime(DEBOUNCE);
-  button1.setDebounceTime(DEBOUNCE);
-  button2.setDebounceTime(DEBOUNCE);
-  button3.setDebounceTime(DEBOUNCE);
-  button4.setDebounceTime(DEBOUNCE);
-  button5.setDebounceTime(DEBOUNCE);
-  button6.setDebounceTime(DEBOUNCE);
-  button7.setDebounceTime(DEBOUNCE);
-  button8.setDebounceTime(DEBOUNCE);
-  button9.setDebounceTime(DEBOUNCE);
-  buttonA.setDebounceTime(DEBOUNCE);
-  buttonB.setDebounceTime(DEBOUNCE);
 
   pinMode(A0, OUTPUT);
   pinMode(A1, OUTPUT);
@@ -167,19 +137,6 @@ void setup()
 
 void loop()
 {
-  button0.loop();
-  button1.loop();
-  button2.loop();
-  button3.loop();
-  button4.loop();
-  button5.loop();
-  button6.loop();
-  button7.loop();
-  button8.loop();
-  button9.loop();
-  buttonA.loop();
-  buttonB.loop();
-
   if (button0.isPressed())
   {
     // microphone
