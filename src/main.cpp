@@ -1,6 +1,5 @@
 #include <Arduino.h>
-#include <Keyboard.h>
-#include <KeyboardLayout.h>
+#include <HID-Project.h>
 
 #define DEBOUNCE 100
 #define DELAY 100
@@ -12,9 +11,11 @@ private:
   bool state;
   bool lastState;
   unsigned long timer;
+
 public:
   But(uint8_t pin);
   bool isPressed(void);
+  bool isDown(void);
 };
 
 But::But(uint8_t p)
@@ -29,14 +30,32 @@ bool But::isPressed(void)
 {
   lastState = state;
   bool input = digitalRead(pin);
-  if (!input) {
+  if (!input)
+  {
     state = true;
     timer = millis() + DEBOUNCE;
   }
   else
   {
     if (millis() > timer)
-    state = false;
+      state = false;
+  }
+  return (state && !lastState);
+}
+
+bool But::isDown(void)
+{
+  lastState = state;
+  bool input = digitalRead(pin);
+  if (!input)
+  {
+    state = true;
+    if (!lastState)
+    {
+      timer = millis() + DEBOUNCE;
+    }
+    if (millis() > timer)
+      state = false;
   }
   return (state && !lastState);
 }
@@ -71,8 +90,8 @@ void Key(const char *k)
 void Key_S(const char *k)
 {
   Keyboard.press(KEY_LEFT_SHIFT);
-  Keyboard.print(k);
-  Keyboard.release(KEY_LEFT_SHIFT);
+  Key(k);
+  Keyboard.releaseAll();
   delay(DELAY);
 }
 
@@ -80,25 +99,24 @@ void Key_SC(const char *k)
 {
   Keyboard.press(KEY_LEFT_CTRL);
   Keyboard.press(KEY_LEFT_SHIFT);
-  Keyboard.print(k);
-  Keyboard.release(KEY_LEFT_SHIFT);
-  Keyboard.release(KEY_LEFT_CTRL);
+  Key(k);
+  Keyboard.releaseAll();
   delay(DELAY);
 }
 
 void Key_A(const char *k)
 {
   Keyboard.press(KEY_LEFT_ALT);
-  Keyboard.print(k);
-  Keyboard.release(KEY_LEFT_ALT);
+  Key(k);
+  Keyboard.releaseAll();
   delay(DELAY);
 }
 
 void Key_W(const char *k)
 {
   Keyboard.press(KEY_LEFT_GUI);
-  Keyboard.print(k);
-  Keyboard.release(KEY_LEFT_GUI);
+  Key(k);
+  Keyboard.releaseAll();
   delay(DELAY);
 }
 
@@ -121,6 +139,7 @@ void set_mode(t_mode m)
 void setup()
 {
   Keyboard.begin();
+  Consumer.begin();
 
   pinMode(A0, OUTPUT);
   pinMode(A1, OUTPUT);
@@ -145,6 +164,9 @@ void loop()
     case teams:
       Key_SC("m");
       break;
+    case zoom:
+      Key_A("a");
+      break;
     default:
       Key_W("h");
     }
@@ -158,6 +180,9 @@ void loop()
     case teams:
       Key_SC("o");
       break;
+    case zoom:
+      Key_A("n");
+      break;
     default:;
     }
   }
@@ -169,6 +194,9 @@ void loop()
     {
     case teams:
       Key_SC("e");
+      break;
+    case zoom:
+      Key_A("s");
       break;
     default:;
     }
@@ -182,18 +210,23 @@ void loop()
     case teams:
       Key_SC("k");
       break;
+    case zoom:
+      Key_A("y");
+      break;
     default:;
     }
   }
 
-  if (button4.isPressed())
+  if (button4.isDown())
   {
-    // volume dn
+    // volume dowm
+    Consumer.write(MEDIA_VOLUME_DOWN);
   }
 
-  if (button5.isPressed())
+  if (button5.isDown())
   {
     // volume up
+    Consumer.write(MEDIA_VOLUME_UP);
   }
 
   if (button6.isPressed())
