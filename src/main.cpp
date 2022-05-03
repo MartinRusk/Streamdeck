@@ -66,7 +66,7 @@ enum t_mode
     none,
     teams,
     zoom,
-    office
+    webex
 } mode;
 
 void Key(const char *k)
@@ -87,6 +87,14 @@ void Key_SC(const char *k)
 {
     Keyboard.press(KEY_LEFT_CTRL);
     Keyboard.press(KEY_LEFT_SHIFT);
+    Key(k);
+    Keyboard.releaseAll();
+    delay(DELAY);
+}
+
+void Key_C(const char *k)
+{
+    Keyboard.press(KEY_LEFT_CTRL);
     Key(k);
     Keyboard.releaseAll();
     delay(DELAY);
@@ -120,7 +128,7 @@ void set_mode(t_mode m)
     }
     digitalWrite(A0, !(mode == teams));
     digitalWrite(A1, !(mode == zoom));
-    digitalWrite(A2, !(mode == office));
+    digitalWrite(A2, !(mode == webex));
     digitalWrite(A3, true);
 }
 
@@ -153,9 +161,9 @@ void setup()
 
 void loop()
 {
+    // microphone
     if (button0.isPressed())
     {
-        // microphone
         switch (mode)
         {
         case teams:
@@ -164,14 +172,17 @@ void loop()
         case zoom:
             Key_A("a");
             break;
+        case webex:
+            Key_C("m");
+            break;
         default:
             Key_W("h");
         }
     }
 
+    // camera
     if (button1.isPressed())
     {
-        // camera
         switch (mode)
         {
         case teams:
@@ -180,13 +191,16 @@ void loop()
         case zoom:
             Key_A("v");
             break;
+        case webex:
+            Key_SC("v");
+            break;
         default:;
         }
     }
 
+    // share screen
     if (button2.isPressed())
     {
-        // share screen
         switch (mode)
         {
         case teams:
@@ -194,6 +208,9 @@ void loop()
             break;
         case zoom:
             Key_A("s");
+            break;
+        case webex:
+            Key_SC("d");
             break;
         default:;
         }
@@ -209,6 +226,9 @@ void loop()
             break;
         case zoom:
             Key_A("y");
+            break;
+        case webex:
+            Key_SC("r");
             break;
         default:;
         }
@@ -234,21 +254,24 @@ void loop()
         Consumer.release(MEDIA_VOLUME_UP);
     }
 
+    // accept call
     if (button6.isPressed())
     {
-        // accept call
         switch (mode)
         {
         case teams:
             Key_SC("u");
             break;
+        case webex:
+            Key_SC("c");
+            break;
         default:;
         }
     }
 
+    // hang up
     if (button7.isPressed())
     {
-        // hang up
         switch (mode)
         {
         case teams:
@@ -256,6 +279,10 @@ void loop()
             break;
         case zoom:
             Key_A("q");
+            break;
+        case webex:
+            Key_C("l");
+            break;
         default:;
         }
     }
@@ -272,7 +299,7 @@ void loop()
 
     if (buttonA.isPressed())
     {
-        set_mode(office);
+        set_mode(webex);
     }
 
     if (buttonB.isPressed())
