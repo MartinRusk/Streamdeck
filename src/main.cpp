@@ -225,7 +225,7 @@ void loop()
             Key_SC("k");
             break;
         case zoom:
-            Key_A("y");
+            Key_A("z");
             break;
         case webex:
             Key_SC("r");
