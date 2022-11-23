@@ -279,6 +279,8 @@ void loop()
             break;
         case zoom:
             Key_A("q");
+            delay(100);
+            Keyboard.println();
             break;
         case webex:
             Key_C("l");
