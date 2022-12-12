@@ -4,18 +4,18 @@
 #include "keys.h"
 
 // buttons as static instances
-But button0(14);
-But button1(0);
-But button2(2);
-But button3(3);
-But button4(4);
-But button5(5);
-But button6(6);
-But button7(7);
-But button8(8);
-But button9(9);
-But buttonA(10);
-But buttonB(16);
+But butMic(14);
+But butCam(0);
+But butShare(2);
+But butHand(3);
+But butVolUp(4);
+But butVolDn(5);
+But butAnswer(6);
+But butHangup(7);
+But butMode1(8);
+But butMode2(9);
+But butMode3(10);
+But butMode4(16);
 
 // modes for the key layout
 enum t_mode
@@ -90,7 +90,7 @@ void setup()
 void loop()
 {
     // microphone button
-    if (button0.isPressed())
+    if (butMic.isPressed())
     {
         switch (mode)
         {
@@ -109,7 +109,7 @@ void loop()
     }
 
     // camera button
-    if (button1.isPressed())
+    if (butCam.isPressed())
     {
         switch (mode)
         {
@@ -127,7 +127,7 @@ void loop()
     }
 
     // share screen button
-    if (button2.isPressed())
+    if (butShare.isPressed())
     {
         switch (mode)
         {
@@ -145,7 +145,7 @@ void loop()
     }
 
     // raise hand button
-    if (button3.isPressed())
+    if (butHand.isPressed())
     {
         switch (mode)
         {
@@ -163,27 +163,27 @@ void loop()
     }
 
     // volume down button
-    if (button4.isPressed())
+    if (butVolUp.isPressed())
     {
         Consumer.press(MEDIA_VOLUME_DOWN);
     }
-    if (button4.isReleased())
+    if (butVolUp.isReleased())
     {
         Consumer.release(MEDIA_VOLUME_DOWN);
     }
 
     // volume up button
-    if (button5.isPressed())
+    if (butVolDn.isPressed())
     {
         Consumer.press(MEDIA_VOLUME_UP);
     }
-    if (button5.isReleased())
+    if (butVolDn.isReleased())
     {
         Consumer.release(MEDIA_VOLUME_UP);
     }
 
     // accept call button
-    if (button6.isPressed())
+    if (butAnswer.isPressed())
     {
         switch (mode)
         {
@@ -198,7 +198,7 @@ void loop()
     }
 
     // hang up button
-    if (button7.isPressed())
+    if (butHangup.isPressed())
     {
         switch (mode)
         {
@@ -218,25 +218,25 @@ void loop()
     }
 
     // Teams button
-    if (button8.isPressed())
+    if (butMode1.isPressed())
     {
         set_mode(teams);
     }
 
     // Zoom button
-    if (button9.isPressed())
+    if (butMode2.isPressed())
     {
         set_mode(zoom);
     }
 
     // WebEx button
-    if (buttonA.isPressed())
+    if (butMode3.isPressed())
     {
         set_mode(webex);
     }
 
     // Windows button
-    if (buttonB.isPressed())
+    if (butMode4.isPressed())
     {
         set_mode(none);
     }
