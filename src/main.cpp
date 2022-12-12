@@ -1,53 +1,9 @@
 #include <Arduino.h>
 #include <HID-Project.h>
+#include "but.h"
+#include "keys.h"
 
-#define DEBOUNCE 100
-#define DELAY 100
-
-class But
-{
-private:
-    uint8_t pin;
-    bool state;
-    bool lastState;
-    unsigned long timer;
-
-public:
-    But(uint8_t pin);
-    bool isPressed(void);
-    bool isReleased(void);
-};
-
-But::But(uint8_t p)
-{
-    pin = p;
-    pinMode(pin, INPUT_PULLUP);
-    state = false;
-    lastState = false;
-}
-
-bool But::isPressed(void)
-{
-    lastState = state;
-    bool input = digitalRead(pin);
-    if (!input)
-    {
-        state = true;
-        timer = millis() + DEBOUNCE;
-    }
-    else
-    {
-        if (millis() > timer)
-            state = false;
-    }
-    return (state && !lastState);
-}
-
-bool But::isReleased(void)
-{
-    return (!state && lastState);
-}
-
+// buttons as static instances
 But button0(14);
 But button1(0);
 But button2(2);
@@ -61,6 +17,7 @@ But button9(9);
 But buttonA(10);
 But buttonB(16);
 
+// modes for the key layout
 enum t_mode
 {
     none,
@@ -69,84 +26,53 @@ enum t_mode
     webex
 } mode;
 
-void Key(const char *k)
+// activate the app via the position of the icon in the taskbar
+void app_activate()
 {
-    Keyboard.print(k);
-    delay(DELAY);
+    if (mode == teams)
+    {
+        // must be adapted to the individual taskbar configuration
+        Key_W("8");
+    }
 }
 
-void Key_S(const char *k)
-{
-    Keyboard.press(KEY_LEFT_SHIFT);
-    Key(k);
-    Keyboard.releaseAll();
-    delay(DELAY);
-}
-
-void Key_SC(const char *k)
-{
-    Keyboard.press(KEY_LEFT_CTRL);
-    Keyboard.press(KEY_LEFT_SHIFT);
-    Key(k);
-    Keyboard.releaseAll();
-    delay(DELAY);
-}
-
-void Key_C(const char *k)
-{
-    Keyboard.press(KEY_LEFT_CTRL);
-    Key(k);
-    Keyboard.releaseAll();
-    delay(DELAY);
-}
-
-void Key_A(const char *k)
-{
-    Keyboard.press(KEY_LEFT_ALT);
-    Key(k);
-    Keyboard.releaseAll();
-    delay(DELAY);
-}
-
-void Key_W(const char *k)
-{
-    Keyboard.press(KEY_LEFT_GUI);
-    Key(k);
-    Keyboard.releaseAll();
-    delay(DELAY);
-}
-
+// activate a mode 
 void set_mode(t_mode m)
 {
     if (m == mode)
     {
-        mode = none;
+        // if mode was already selected activate app via taskbar position
+        app_activate();
     }
     else
     {
+        // select new mode
         mode = m;
+        digitalWrite(A0, !(mode == teams));
+        digitalWrite(A1, !(mode == zoom));
+        digitalWrite(A2, !(mode == webex));
+        digitalWrite(A3, !(mode == none));
     }
-    digitalWrite(A0, !(mode == teams));
-    digitalWrite(A1, !(mode == zoom));
-    digitalWrite(A2, !(mode == webex));
-    digitalWrite(A3, true);
 }
 
+// initialization
 void setup()
 {
+    // start keyboard driver for key library and consumer driver for volume control
     Keyboard.begin();
     Consumer.begin();
 
+    // initialize LED pins
     pinMode(A0, OUTPUT);
     pinMode(A1, OUTPUT);
     pinMode(A2, OUTPUT);
     pinMode(A3, OUTPUT);
-
     digitalWrite(A0, true);
     digitalWrite(A1, true);
     digitalWrite(A2, true);
     digitalWrite(A3, true);
 
+    // sweep LEDs to signalize initialization
     digitalWrite(A0, false);
     delay(250);
     digitalWrite(A1, false);
@@ -156,12 +82,14 @@ void setup()
     digitalWrite(A3, false);
     delay(250);
 
-    set_mode(none);
+    // Teams is default mode
+    set_mode(teams);
 }
 
+// cyclic loop
 void loop()
 {
-    // microphone
+    // microphone button
     if (button0.isPressed())
     {
         switch (mode)
@@ -180,7 +108,7 @@ void loop()
         }
     }
 
-    // camera
+    // camera button
     if (button1.isPressed())
     {
         switch (mode)
@@ -198,7 +126,7 @@ void loop()
         }
     }
 
-    // share screen
+    // share screen button
     if (button2.isPressed())
     {
         switch (mode)
@@ -216,9 +144,9 @@ void loop()
         }
     }
 
+    // raise hand button
     if (button3.isPressed())
     {
-        // raise hand
         switch (mode)
         {
         case teams:
@@ -234,7 +162,7 @@ void loop()
         }
     }
 
-    // Volume down
+    // volume down button
     if (button4.isPressed())
     {
         Consumer.press(MEDIA_VOLUME_DOWN);
@@ -244,7 +172,7 @@ void loop()
         Consumer.release(MEDIA_VOLUME_DOWN);
     }
 
-    // Volume up
+    // volume up button
     if (button5.isPressed())
     {
         Consumer.press(MEDIA_VOLUME_UP);
@@ -254,7 +182,7 @@ void loop()
         Consumer.release(MEDIA_VOLUME_UP);
     }
 
-    // accept call
+    // accept call button
     if (button6.isPressed())
     {
         switch (mode)
@@ -269,7 +197,7 @@ void loop()
         }
     }
 
-    // hang up
+    // hang up button
     if (button7.isPressed())
     {
         switch (mode)
@@ -289,21 +217,25 @@ void loop()
         }
     }
 
+    // Teams button
     if (button8.isPressed())
     {
         set_mode(teams);
     }
 
+    // Zoom button
     if (button9.isPressed())
     {
         set_mode(zoom);
     }
 
+    // WebEx button
     if (buttonA.isPressed())
     {
         set_mode(webex);
     }
 
+    // Windows button
     if (buttonB.isPressed())
     {
         set_mode(none);
