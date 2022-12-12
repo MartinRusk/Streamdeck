@@ -8,8 +8,8 @@ But butMic(14);
 But butCam(0);
 But butShare(2);
 But butHand(3);
-But butVolUp(4);
-But butVolDn(5);
+But butVolDn(4);
+But butVolUp(5);
 But butAnswer(6);
 But butHangup(7);
 But butMode1(8);
@@ -163,21 +163,21 @@ void loop()
     }
 
     // volume down button
-    if (butVolUp.isPressed())
+    if (butVolDn.isPressed())
     {
         Consumer.press(MEDIA_VOLUME_DOWN);
     }
-    if (butVolUp.isReleased())
+    if (butVolDn.isReleased())
     {
         Consumer.release(MEDIA_VOLUME_DOWN);
     }
 
     // volume up button
-    if (butVolDn.isPressed())
+    if (butVolUp.isPressed())
     {
         Consumer.press(MEDIA_VOLUME_UP);
     }
-    if (butVolDn.isReleased())
+    if (butVolUp.isReleased())
     {
         Consumer.release(MEDIA_VOLUME_UP);
     }
