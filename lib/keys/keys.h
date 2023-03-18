@@ -8,5 +8,6 @@ void Key_SC(const char *k); //shift control
 void Key_C(const char *k); // control
 void Key_A(const char *k); // alt
 void Key_W(const char *k); // windows
+void Key_WA(const char *k); // windows alt
 
 #endif

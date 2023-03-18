@@ -50,3 +50,12 @@ void Key_W(const char *k)
     Keyboard.releaseAll();
     delay(DELAY);
 }
+
+void Key_WA(const char *k)
+{
+    Keyboard.press(KEY_LEFT_GUI);
+    Keyboard.press(KEY_LEFT_ALT);
+    Key(k);
+    Keyboard.releaseAll();
+    delay(DELAY);
+}

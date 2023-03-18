@@ -1,21 +1,21 @@
 #include <Arduino.h>
 #include <HID-Project.h>
-#include "but.h"
-#include "keys.h"
+#include <keys.h>
+#include <XPLDevices.h>
 
 // buttons as static instances
-But butMic(14);
-But butCam(0);
-But butShare(2);
-But butHand(3);
-But butVolDn(4);
-But butVolUp(5);
-But butAnswer(6);
-But butHangup(7);
-But butMode1(8);
-But butMode2(9);
-But butMode3(10);
-But butMode4(16);
+Button butMic(14);
+Button butCam(0);
+Button butShare(2);
+Button butHand(3);
+Button butVolDn(4);
+Button butVolUp(5);
+Button butAnswer(6);
+Button butHangup(7);
+Button butMode1(8);
+Button butMode2(9);
+Button butMode3(10);
+Button butMode4(16);
 
 // modes for the key layout
 enum t_mode
@@ -61,6 +61,10 @@ void setup()
     // start keyboard driver for key library and consumer driver for volume control
     Keyboard.begin();
     Consumer.begin();
+    
+    // start XPLDirect driver
+    Serial.begin(XPLDIRECT_BAUDRATE);
+    XP.begin("Streamdeck");
 
     // initialize LED pins
     pinMode(A0, OUTPUT);
@@ -89,13 +93,17 @@ void setup()
 // cyclic loop
 void loop()
 {
+    // handle XPLDirect interface
+    XP.xloop();
+
     // microphone button
-    if (butMic.isPressed())
+    if (butMic.pressed())
     {
         switch (mode)
         {
         case teams:
-            Key_SC("m");
+            Key_WA("k");
+            // Key_SC("m");
             break;
         case zoom:
             Key_A("a");
@@ -109,7 +117,7 @@ void loop()
     }
 
     // camera button
-    if (butCam.isPressed())
+    if (butCam.pressed())
     {
         switch (mode)
         {
@@ -127,7 +135,7 @@ void loop()
     }
 
     // share screen button
-    if (butShare.isPressed())
+    if (butShare.pressed())
     {
         switch (mode)
         {
@@ -145,7 +153,7 @@ void loop()
     }
 
     // raise hand button
-    if (butHand.isPressed())
+    if (butHand.pressed())
     {
         switch (mode)
         {
@@ -163,27 +171,27 @@ void loop()
     }
 
     // volume down button
-    if (butVolDn.isPressed())
+    if (butVolDn.pressed())
     {
         Consumer.press(MEDIA_VOLUME_DOWN);
     }
-    if (butVolDn.isReleased())
+    if (butVolDn.released())
     {
         Consumer.release(MEDIA_VOLUME_DOWN);
     }
 
     // volume up button
-    if (butVolUp.isPressed())
+    if (butVolUp.pressed())
     {
         Consumer.press(MEDIA_VOLUME_UP);
     }
-    if (butVolUp.isReleased())
+    if (butVolUp.released())
     {
         Consumer.release(MEDIA_VOLUME_UP);
     }
 
     // accept call button
-    if (butAnswer.isPressed())
+    if (butAnswer.pressed())
     {
         switch (mode)
         {
@@ -198,7 +206,7 @@ void loop()
     }
 
     // hang up button
-    if (butHangup.isPressed())
+    if (butHangup.pressed())
     {
         switch (mode)
         {
@@ -218,25 +226,25 @@ void loop()
     }
 
     // Teams button
-    if (butMode1.isPressed())
+    if (butMode1.pressed())
     {
         set_mode(teams);
     }
 
     // Zoom button
-    if (butMode2.isPressed())
+    if (butMode2.pressed())
     {
         set_mode(zoom);
     }
 
     // WebEx button
-    if (butMode3.isPressed())
+    if (butMode3.pressed())
     {
         set_mode(webex);
     }
 
     // Windows button
-    if (butMode4.isPressed())
+    if (butMode4.pressed())
     {
         set_mode(none);
     }
