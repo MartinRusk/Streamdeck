@@ -96,6 +96,20 @@ void loop()
     // handle XPLDirect interface
     XP.xloop();
 
+    // handle buttons
+    butMic.handle();
+    butCam.handle();
+    butShare.handle();
+    butHand.handle();
+    butVolDn.handle();
+    butVolUp.handle();
+    butAnswer.handle();
+    butHangup.handle();
+    butMode1.handle();
+    butMode2.handle();
+    butMode3.handle();
+    butMode4.handle();
+
     // microphone button
     if (butMic.pressed())
     {
